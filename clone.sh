@@ -6,6 +6,7 @@ readonly DESCRIPTION=$3
 usage() {
   echo "USAGE: ./clone.sh Source_VM New_VM Description(replace space with underscore)"
 }
+
 main() {
   if [  $NUMARGS -gt 2 ]
   then
@@ -13,18 +14,17 @@ main() {
     exit 1
   fi
 
-  if [  $NUMARGS -le 1 ]
+  if [  $NUMARGS -le 2 ]
   then
     usage
     exit 1
   fi
-  
+
   VMFILE=`grep scsi0\:0\.fileName "$INFOLDER"/*.vmx | grep -o "[0-9]\{6,6\}"`
 
   mkdir "$OUTFOLDER"
   cp "$INFOLDER"/*-"$VMFILE"* "$OUTFOLDER"/
   cp "$INFOLDER"/*.vmx "$OUTFOLDER"/
-
 
   #reference snapshot
   SNAPSHOT=`grep -o "[^\"]*.vmsn" "$INFOLDER"/*.vmx | tail -1`
@@ -67,7 +67,7 @@ main() {
 
   # add machine id
   sed -i -e "\$amachine.id=$OUTFOLDER" *.vmx
- 
+
   # Register the machine so that it appears in vSphere.
   FULL_PATH=`pwd`/*.vmx
   VMID=`vim-cmd solo/registervm $FULL_PATH`
