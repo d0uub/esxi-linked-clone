@@ -23,7 +23,10 @@ main() {
 
   #reference snapshot
   SNAPSHOT=`grep -o "[^\"]*.vmsn" "$INFOLDER"/*.vmx | tail -1`
+  if [ ! -z "$SNAPSHOT" ]
+  then
   sed -i -e '/checkpoint.vmState =/s/= .*/= "..\/'$INFOLDER'\/'$SNAPSHOT'"/' $OUTFOLDER/*.vmx
+  fi
 
   local fullbasepath=$(readlink -f "$INFOLDER")/
   cd "$OUTFOLDER"/
