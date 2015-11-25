@@ -3,14 +3,15 @@ readonly INFOLDER=$1
 readonly OUTFOLDER=$2
 
 usage() {
-  echo "USAGE: ./clone.sh base_image_folder out_folder"
-}
-makeandcopy() {
-  mkdir "$OUTFOLDER"
-  cp "$INFOLDER"/*-"$VMFILE"* "$OUTFOLDER"/
-  cp "$INFOLDER"/*.vmx "$OUTFOLDER"/
+  echo "USAGE: ./clone.sh Source_VM New_VM Description(replace space with underscore)"
 }
 main() {
+  if [  $NUMARGS -gt 2 ]
+  then
+    usage
+    exit 1
+  fi
+
   if [  $NUMARGS -le 1 ]
   then
     usage
@@ -19,7 +20,10 @@ main() {
   
   VMFILE=`grep scsi0\:0\.fileName "$INFOLDER"/*.vmx | grep -o "[0-9]\{6,6\}"`
 
-  makeandcopy
+  mkdir "$OUTFOLDER"
+  cp "$INFOLDER"/*-"$VMFILE"* "$OUTFOLDER"/
+  cp "$INFOLDER"/*.vmx "$OUTFOLDER"/
+
 
   #reference snapshot
   SNAPSHOT=`grep -o "[^\"]*.vmsn" "$INFOLDER"/*.vmx | tail -1`
@@ -44,6 +48,12 @@ main() {
   #echo 'answer.msg.uuid.altered="I copied it" ' >>./*.vmx
   sed -i '/uuid.location/d' ./*.vmx
   sed -i '/uuid.bios/d' ./*.vmx
+
+  # delete old annotation
+  sed -i '/annotation *=/d' *.vmx
+
+  # add new annotation
+  sed -i -e "\$aannotation = \"$DESCRIPTION\"" *.vmx
 
   # Things that ghetto-esxi-linked-clones.sh did that we might want.  I can only guess at their use/value.
   #sed -i '/scsi0:0.fileName/d' ${STORAGE_PATH}/$FINAL_VM_NAME/$FINAL_VM_NAME.vmx
