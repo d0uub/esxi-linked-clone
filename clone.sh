@@ -1,6 +1,7 @@
 readonly NUMARGS=$#
 readonly INFOLDER=$1
 readonly OUTFOLDER=$2
+readonly DESCRIPTION=$3
 
 usage() {
   echo "USAGE: ./clone.sh Source_VM New_VM Description(replace space with underscore)"
