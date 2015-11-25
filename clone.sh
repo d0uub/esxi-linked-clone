@@ -8,7 +8,7 @@ usage() {
 }
 
 main() {
-  if [  $NUMARGS -gt 2 ]
+  if [  $NUMARGS -gt 3 ]
   then
     usage
     exit 1
