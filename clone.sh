@@ -5,7 +5,7 @@ readonly DESCRIPTION=$3
 readonly OWNER=$4
 
 usage() {
-  echo "USAGE: ./clone.sh Source_VM New_VM Description(replace space with underscore)"
+  echo "USAGE: ./clone.sh Source_VM New_VM [Description(with double quote)] [owner]"
 }
 
 main() {
