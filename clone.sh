@@ -38,14 +38,14 @@ main() {
 	exit 1
   fi
   
-  VMFILE=`grep scsi0\:0\.fileName "$INFOLDER"/*.vmx | grep -o "[0-9]\{6,6\}"`
+  VMFILE=`grep \(scsi\|sata\)0\:0\.fileName "$INFOLDER"/*.vmx | grep -o "[0-9]\{6,6\}"`
   
   #if size over 20MB, take snapshot automatically 
   FILESIZE=$(( $( stat -c '%s' "$INFOLDER"/*"$VMFILE"-delta.vmdk) / 1024 / 1024 ))
   if [ "$FILESIZE" -gt 20 ]
   then
   	vim-cmd vmsvc/snapshot.create $VMID "Snapshot by clone script" "Date:`date`"
-	VMFILE=`grep scsi0\:0\.fileName "$INFOLDER"/*.vmx | grep -o "[0-9]\{6,6\}"`
+	VMFILE=`grep \(scsi\|sata\)0\:0\.fileName "$INFOLDER"/*.vmx | grep -o "[0-9]\{6,6\}"`
   fi
 
   mkdir "$OUTFOLDER"
