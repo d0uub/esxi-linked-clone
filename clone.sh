@@ -1,11 +1,10 @@
 readonly NUMARGS=$#
 readonly INFOLDER=$1
 readonly OUTFOLDER=$2
-readonly DESCRIPTION=$3
-readonly OWNER=$4
+readonly PASSWORD=$3
 
 usage() {
-  echo "USAGE: ./clone.sh Source_VM New_VM [Description(with double quote)] [owner]"
+  echo "USAGE: ./clone.sh Source_VM New_VM [VNC Password]"
 }
 
 main() {
@@ -80,7 +79,7 @@ main() {
   sed -i '/annotation *=/d' *.vmx
   
   # add new annotation
-  sed -i -e "\$aannotation = \"$DESCRIPTION|0AClone From : $INFOLDER|0AOwner : $OWNER|0ACreate Date : `date`\"" *.vmx
+  sed -i -e "\$aannotation = \"Clone From : $INFOLDER|0ACreate Date : `date`\"" *.vmx
   
   # delete owner
   sed -i '/owner *=/d' *.vmx
@@ -106,10 +105,19 @@ main() {
   # Register the machine so that it appears in vSphere.
   FULL_PATH=`pwd`/*.vmx
   VMID=`vim-cmd solo/registervm $FULL_PATH`
+  PORT=$((5000+$VMID))
   
+  # Delete old VNC config
+  sed -i '/RemoteDisplay.vnc.*=/d' *.vmx
+
+  # Add vnc support
+  sed -i -e "\$aRemoteDisplay.vnc.enabled=true" *.vmx
+  sed -i -e "\$aRemoteDisplay.vnc.port=$PORT" *.vmx
+  sed -i -e "\$aRemoteDisplay.vnc.password=$PASSWORD" *.vmx
 
   # Power on the machine.
   vim-cmd vmsvc/power.on $VMID
+  echo "VNC port : $PORT"
 }
 
 main
